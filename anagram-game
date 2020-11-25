@@ -1,0 +1,85 @@
+import itertools
+import random
+
+file = open("words7.txt")
+filetext = file.read()
+words = filetext.split()
+answers = [] #empty list to fill with the answers. pop the words from the answers when the user correctly guesses an answer
+            # so that while loop will end when all the answers have been guessed
+answers1 = [] # i created another list to fill with the same answers as the list above except this one
+            # will not be pop'ed or changed. I used .append() instead of .copy() since I wanted
+            # answers1 to be a global variable 
+
+def main(words):
+    newwords = [] #creating new list to store the 7 letter words
+    for i in range(len(words)): #iterating through WORDS
+        if len(words[i]) == 7: #finding all the 7 letter words
+            newwords.append(words[i]) #adding them to the new list
+    clue = random.choice(newwords) #grabbing a random word from the new list
+    getallwords(clue) #for loop for n
+    answers.sort() #sorting alphabetically
+    answers.sort(key=len, reverse=False) #sorting by length while retaining alphabetically order
+    answers1.sort() #same type of sorting as answers
+    answers1.sort(key=len, reverse=False)
+    twist(clue,answers)
+
+
+
+def getallwords(clue): 
+    for n in range(3,7): #loop through 3, 4, 5, and 6 letter permutations of clue
+        getwords(clue,n) 
+    return answers
+
+def getwords(clue,n):
+    a1 = list(map("".join, itertools.permutations(clue,n))) #permutations of n letters stored in list a1
+    a2 = set(a1) #turning a1 list into a set to remove duplicates
+    a1 = list(a2) #turning a1 back into a list
+    for i in range(len(a1)): #testing all the values in a1
+        if a1[i] in words: # if they're in WORDS
+            answers.append(a1[i]) #add them to the list of answers
+            answers1.append(a1[i]) #adding them to the list of answers1 
+
+def twist(clue,answers):
+    for i in range(len(answers)): 
+        print(len(answers[i]) * "_ ") #printing underscores for the first time
+    print() # printing space before the clue
+    print(clue)
+    guesses = set() #making guesses into a set
+    while answers != []: #will .remove() the answers as they are guessed so that when there is an empty
+                        #list, the loop will exit
+        printboard(clue,guesses,answers)
+    
+    
+def printboard(clue,guesses,answers):
+    guesses1 = str(input("Guess a word, or q for quit or t for twist: ")) #asking for user to guess
+    if guesses1 != "q" and guesses1 != "t": #if the user enters a word
+        guesses.add(guesses1) #adding word to the set of guesses
+        for i in range(len(answers1)): #iterating through all of indices in answers1
+            if answers1[i] in guesses: #printing the word if it has been guessed before
+                print(answers1[i]) #this is why i needed answers and answers1
+                                    #since if you .remove(), the index will change
+            if answers1[i] not in guesses: #printing the underscores if there's still unknowns
+                print(len(answers1[i]) * "_ ")
+        print() #printing the space
+        print(clue)
+        if guesses1 in answers:
+            answers.remove(guesses1) # removing the the guess from answers if it is correct 
+    if guesses1 == "t":  #if they enter "t"
+        for i in range(len(answers1)): #printing the board like i did in the above if statement
+            if answers1[i] in guesses:
+                print(answers1[i])
+            if answers1[i] not in guesses:
+                print(len(answers1[i]) * "_ ")
+        clue = list(clue) #turning clue into a list. 
+        random.shuffle(clue) #with the new reordered clue at the end
+        print() #printing a space
+        for i in range(len(clue)): #since clue is a string that we turned into a list it will look like
+                                    #["c", "l", "u", "e"] so we have to iterate through each letter to print the word
+            print(clue[i], end="")
+        print() #printing another space so that the input "Guess a word, or q for quit..." doesn't overlap
+    if guesses1 == "q":
+        print("Thanks for playing!")
+        answers.clear() #clearing answers so that the while loop does not continue
+
+
+main(words)
