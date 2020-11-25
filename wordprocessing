@@ -1,0 +1,56 @@
+def main(length, file):
+    file = open(file1)
+    filetext = file.read()
+    para = filetext.split('\n\n') #split by paragraph so its like ["first paragraph", "second paragraph", "third paragraph"], into a list
+    words = []
+    for i in range(len(para)): 
+        words.append(para[i].split())
+    for i in range(len(words)):
+        printpara(words[i], length)
+        print("\n\n")
+        
+
+def printpara(words,length): #takes long list of words representing a paragraph and the length of the justified line
+    while len(words) != 0:
+        line = getline(words,length)
+        break
+    spaces = [1] * (len(line)-1) 
+    if len(words) != 0: 
+        addspace(line,spaces,length)
+    else: #so when its the last line
+        for i in range(len(line)):
+            print(line[i], end=" ")
+    if len(words) != 0:
+        printline(line,spaces)
+    if len(words) != 0:
+        printpara(words,length)
+    
+
+def getline(words,length):
+        ans=[]
+        total=0
+        while (length>total) and 0 != len(words):
+            word=words.pop(0)
+            total += len(word)+1  #add 1 for the space
+            ans.append(word)
+        #now we are one word too long
+        if total > length:
+            words.insert(0,ans.pop())
+        return ans
+
+def addspace(line,spaces,length): 
+    total = 0
+    for i in range(len(line)): #checking total characters in line
+        total += (len(line[i])+1)
+    total = total - 1 #for the last space at the end of the line
+    while total < length: #so if total = 38 and you wanted length 40
+        spaces[random.randint(0,len(spaces)-1)] += 1
+        total += 1
+    spaces.append(0)
+    return spaces
+    
+def printline(line,spaces):
+    for i in range(len(line)):
+        print(line[i], end="")
+        print(" " * spaces[i], end="")
+    print(end='\n')
